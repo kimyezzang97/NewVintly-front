@@ -15,7 +15,8 @@
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
-      "webpack-env"
+      "webpack-env",
+      //"vue/macros-global"
     ],
     "paths": {
       "@/*": [
@@ -38,5 +39,6 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  
 }
