@@ -16,7 +16,7 @@
           </RouterLink>
         </v-container>
       </v-app-bar>
-      <v-app-bar class="" density="compact" flat>
+      <v-app-bar class="border-b" density="compact" flat>
         <v-spacer></v-spacer>
         <v-tabs
           align-tabs="center"
@@ -35,30 +35,25 @@
           hide-slider
         >
           <v-tab text="로그인" class="custom-tab"></v-tab>
-          <v-tab text="회원가입" class="custom-tab"></v-tab>
+          <v-tab text="회원가입" class="custom-tab" to="/auth/join"></v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
       </v-app-bar>
 
-      <v-main class="bg-grey-lighten-3">
+      <v-main>
         <v-container>
           <v-row>
-            <v-col cols="12" md="2">
-              <v-sheet min-height="268" rounded="lg">
-                <!--  -->
-              </v-sheet>
+            <!-- left -->
+            <v-col cols="12" md="2" class="bg-grey-lighten-3">
+              <v-sheet min-height="268" rounded="lg"> </v-sheet>
             </v-col>
 
-            <v-col cols="12" md="8">
-              <v-sheet min-height="70vh" rounded="lg">
-                <!--  -->
-              </v-sheet>
-            </v-col>
+            <!-- MainPage -->
+            <router-view />
 
-            <v-col cols="12" md="2">
-              <v-sheet min-height="268" rounded="lg">
-                <!--  -->
-              </v-sheet>
+            <!-- right -->
+            <v-col cols="12" md="2" class="bg-grey-lighten-3">
+              <v-sheet min-height="268" rounded="lg"> </v-sheet>
             </v-col>
           </v-row>
         </v-container>
@@ -68,8 +63,8 @@
   <!-- footer -->
   <v-footer class="text-center d-flex flex-column ga-2 py-4" color="black">
     <div class="text-caption font-weight-regular opacity-60">
-      관리자 : 김예찬 | E-mail : jvintaged@naver.com ©VINTLY. ALL RIGHTS
-      RESERVED
+      <div>©VINTLY. ALL RIGHTS RESERVED</div>
+      <div>관리자 : 김예찬 | E-mail : jvintaged@naver.com</div>
     </div>
   </v-footer>
 </template>
