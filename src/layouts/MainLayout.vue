@@ -65,6 +65,13 @@
       </v-main>
     </v-app>
   </v-layout>
+  <!-- footer -->
+  <v-footer class="text-center d-flex flex-column ga-2 py-4" color="black">
+    <div class="text-caption font-weight-regular opacity-60">
+      관리자 : 김예찬 | E-mail : jvintaged@naver.com ©VINTLY. ALL RIGHTS
+      RESERVED
+    </div>
+  </v-footer>
 </template>
 
 <script setup lang="ts">
