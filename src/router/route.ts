@@ -8,7 +8,7 @@ const routes = [
     path: "/auth",
     component: () => import("@/layouts/MainLayout.vue"),
     children: [
-      { path: "join", component: () => import("@/pages/auth/JonPage.vue") },
+      { path: "join", component: () => import("@/pages/auth/JoinPage.vue") },
     ],
   },
 ];
