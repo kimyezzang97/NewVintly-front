@@ -34,7 +34,7 @@
           class="d-flex"
           hide-slider
         >
-          <v-tab text="로그인" class="custom-tab"></v-tab>
+          <v-tab text="로그인" class="custom-tab" to="/auth/login"></v-tab>
           <v-tab text="회원가입" class="custom-tab" to="/auth/join"></v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
