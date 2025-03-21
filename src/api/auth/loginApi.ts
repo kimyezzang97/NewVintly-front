@@ -3,6 +3,9 @@ import { apiResponse } from "@/types/apiResponse";
 import { ReqLoginType } from "@/types/auth/reqLoginType";
 import axios from "axios";
 
+import { useAuthStore } from "@/store/auth";
+const authStore = useAuthStore();
+
 // login
 export const postLogin = async (
   reqLoginType: ReqLoginType
@@ -13,7 +16,7 @@ export const postLogin = async (
     // refresh 쿠키 값 확인(httpOnly라서 JS는 안 보임) : 개발자 도구 application > cookies
     // Access Token 저장 (로컬 스토리지)
     const accessToken = response.headers["access"];
-    if (accessToken) localStorage.setItem("access", accessToken);
+    if (accessToken) authStore.login(accessToken); //localStorage.setItem("access", accessToken);
 
     return {
       status: "OK",

@@ -13,7 +13,7 @@
             variant="outlined"
             color="teal-darken-2"
             style="font-size: 20px"
-            maxlength="20"
+            maxlength="64"
           />
         </div>
       </div>
@@ -48,7 +48,13 @@
 </template>
 
 <script setup lang="ts">
+import { postLogin } from "@/api/auth/loginApi";
+import { ReqLoginType } from "@/types/auth/reqLoginType";
 import { ref } from "vue";
+
+import { useRouter } from "vue-router";
+const router = useRouter();
+
 const email = ref("");
 const password = ref("");
 
@@ -60,6 +66,22 @@ const login = async () => {
   if (password.value == "") {
     alert("비밀번호를 입력해주세요.");
     return;
+  }
+
+  const reqLoginType: ReqLoginType = {
+    username: email.value,
+    password: password.value,
+  };
+
+  const result = await postLogin(reqLoginType);
+  alert(result.msg);
+
+  if (result.status === "OK") {
+    // login 성공 console.log("로그인 성공");
+
+    router.push("/").then(() => {
+      window.location.reload(); // 전체 페이지 새로고침
+    });
   }
 };
 

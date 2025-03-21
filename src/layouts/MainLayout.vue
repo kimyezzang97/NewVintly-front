@@ -34,8 +34,25 @@
           class="d-flex"
           hide-slider
         >
-          <v-tab text="로그인" class="custom-tab" to="/auth/login"></v-tab>
-          <v-tab text="회원가입" class="custom-tab" to="/auth/join"></v-tab>
+          <v-tab
+            v-if="!authStore.isAuthenticated"
+            text="로그인"
+            class="custom-tab"
+            to="/auth/login"
+          ></v-tab>
+          <v-tab
+            v-else
+            text="로그아웃"
+            class="custom-tab"
+            @click="authStore.logout()"
+          ></v-tab>
+          <v-tab
+            v-if="!authStore.isAuthenticated"
+            text="회원가입"
+            class="custom-tab"
+            to="/auth/join"
+          ></v-tab>
+          <v-tab v-else text="마이페이지" class="custom-tab"></v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
       </v-app-bar>
@@ -70,6 +87,10 @@
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from "@/store/auth";
+import { ref } from "vue";
+const authStore = useAuthStore();
+
 defineOptions({
   name: "MainLayout",
 });
