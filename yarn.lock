@@ -6708,10 +6708,10 @@ vue@^3.2.13:
     "@vue/server-renderer" "3.5.13"
     "@vue/shared" "3.5.13"
 
-vuetify@^3.0.0-beta.0:
-  version "3.7.15"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.7.15.tgz#f0f9944c9e4c3cac311dae94fee5348c59b054ce"
-  integrity sha512-kBZzwXI5EcAMiW5TRMgK1reXQd0K/PpUt+ekX4Alvm7n09uzJ1my1TLNbX1sQ8/0KYgoxOf17C8qOJzBGkT+PA==
+vuetify@^3.8.0-beta.0:
+  version "3.8.0-beta.0"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-3.8.0-beta.0.tgz#dd615c1a93131096d19df66baa6fba019ce77cd4"
+  integrity sha512-wixr3ybX25yMmhnd43XxnChuaGDnz0KuKY2ttvbrdojtkmMqNkDssIM0qty2L7PDy1xc2wFuRTfm20hyayldYQ==
 
 watchpack@^2.4.0, watchpack@^2.4.1:
   version "2.4.2"

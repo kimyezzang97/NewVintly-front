@@ -60,16 +60,16 @@
       <v-main>
         <v-container>
           <v-row>
-            <!-- left -->
-            <v-col cols="12" md="2" class="bg-grey-lighten-3">
+            <!-- left 화면 가로 길이가 960 밑이면 없어짐 -->
+            <v-col v-if="isMdAndUp" cols="12" md="2" class="bg-grey-lighten-3">
               <v-sheet min-height="268" rounded="lg"> </v-sheet>
             </v-col>
 
             <!-- MainPage -->
             <router-view />
 
-            <!-- right -->
-            <v-col cols="12" md="2" class="bg-grey-lighten-3">
+            <!-- right 화면 가로 길이가 960 밑이면 없어짐 -->
+            <v-col v-if="isMdAndUp" cols="12" md="2" class="bg-grey-lighten-3">
               <v-sheet min-height="268" rounded="lg"> </v-sheet>
             </v-col>
           </v-row>
@@ -88,7 +88,15 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "@/store/auth";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import { useDisplay } from "vuetify";
+
+// Vuetify의 화면 크기 관련 정보 가져오기
+const display = useDisplay();
+
+// 화면 크기가 md (중간 크기 : 960px) 이상일 때 true
+const isMdAndUp = ref(display.mdAndUp);
+
 const authStore = useAuthStore();
 
 defineOptions({
