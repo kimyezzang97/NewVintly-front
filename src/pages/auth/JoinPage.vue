@@ -124,7 +124,7 @@
         <v-btn
           class="font-weight-bold"
           no-uppercase
-          color="brown darken-2"
+          color="brown"
           style="font-size: 20px; width: 160px; height: 55px"
           @click="join()"
         >

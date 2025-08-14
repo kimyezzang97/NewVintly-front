@@ -15,11 +15,8 @@ export const getCheckNickname = async (
       msg: response.data.msg,
     };
   } catch (error) {
-    if (
-      axios.isAxiosError<{ message: string; statusCode: number }>(error) &&
-      error.response
-    ) {
-      const { statusCode } = error.response.data;
+    if (axios.isAxiosError(error) && error.response) {
+      const statusCode = error.response.status; // error.response.data
 
       if (statusCode === 403) {
         return {
@@ -46,11 +43,8 @@ export const getCheckEmail = async (email: string): Promise<apiResponse> => {
       msg: response.data.msg,
     };
   } catch (error) {
-    if (
-      axios.isAxiosError<{ message: string; statusCode: number }>(error) &&
-      error.response
-    ) {
-      const { statusCode } = error.response.data;
+    if (axios.isAxiosError(error) && error.response) {
+      const statusCode = error.response.status;
 
       if (statusCode === 403) {
         return {
@@ -78,11 +72,8 @@ export const postJoin = async (
       msg: response.data.msg,
     };
   } catch (error) {
-    if (
-      axios.isAxiosError<{ message: string; statusCode: number }>(error) &&
-      error.response
-    ) {
-      const { statusCode } = error.response.data;
+    if (axios.isAxiosError(error) && error.response) {
+      const statusCode = error.response.status;
 
       if (statusCode === 403) {
         return {
