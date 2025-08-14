@@ -10,7 +10,10 @@
   - vuetify : 3.0.0
 
 ### 프로젝트 setup
+- fnm 설치
+  - https://blog.naver.com/kingyezzang/223784735185
 
+- yarn 설치
 ```bash
 # pacakge update
 yarn install
