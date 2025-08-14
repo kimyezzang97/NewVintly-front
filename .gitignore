@@ -7,6 +7,10 @@ Thumbs.db
 # local env files
 .env.local
 .env.*.local
+
+.env.development
+.env.production
+
 dist/
 .env
 
