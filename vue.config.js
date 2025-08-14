@@ -13,6 +13,11 @@ module.exports = defineConfig({
       // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vuetify-loader
     },
   },
+
+  devServer: {
+    port: 3000 // 원하는 포트 번호
+  },
+
   // Webpack 설정 수정
   chainWebpack: (config) => {
     // 기존 eslint-loader를 eslint-webpack-plugin으로 변경
