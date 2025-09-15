@@ -187,7 +187,8 @@ const checkNickname = async () => {
   }
 
   const result = await getCheckNickname(nickname.value);
-  if (result.status === "OK") nicknameAvailable.value = true;
+  console.log("result : ", result)
+  if (result.success === true) nicknameAvailable.value = true;
   alert(result.msg);
 };
 
@@ -199,7 +200,7 @@ const checkEmail = async () => {
   }
 
   const result = await getCheckEmail(email.value);
-  if (result.status === "OK") emailAvailable.value = true;
+  if (result.success === true) emailAvailable.value = true;
   alert(result.msg);
 };
 
@@ -237,7 +238,7 @@ const join = async () => {
   const result = await postJoin(reqJoinType);
   alert(result.msg);
 
-  if (result.status === "OK") {
+  if (result.success === true) {
     // 회원가입 성공 후 페이지 이동
     router.push("/");
   }

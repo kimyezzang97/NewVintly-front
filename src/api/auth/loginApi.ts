@@ -19,7 +19,8 @@ export const postLogin = async (
     if (accessToken) authStore.login(accessToken); //localStorage.setItem("access", accessToken);
 
     return {
-      status: "OK",
+      code: 200,
+      success: true,
       msg: "로그인에 성공하였습니다.",
     };
   } catch (error) {
@@ -28,13 +29,15 @@ export const postLogin = async (
 
       if (statusCode === 401) {
         return {
-          status: "fail",
+          code: statusCode,
+          success: false,
           msg: "아이디가 없거나 비밀번호가 일치하지 않습니다.",
         };
       }
     }
     return {
-      status: "fail",
+      code: 500,
+      success: false,
       msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
     };
   }

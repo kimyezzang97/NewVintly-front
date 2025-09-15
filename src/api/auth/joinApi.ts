@@ -8,10 +8,11 @@ export const getCheckNickname = async (
   nickname: string
 ): Promise<apiResponse> => {
   try {
-    const response = await api.get(`/api/v1/auth/nickname/${nickname}`);
-
+    const response = await api.get(`/api/v1/members/nickname/${nickname}`);
+    console.log('response : ', response)
     return {
-      status: response.data.status,
+      code: response.data.code,
+      success: response.data.success,
       msg: response.data.msg,
     };
   } catch (error) {
@@ -20,14 +21,16 @@ export const getCheckNickname = async (
 
       if (statusCode === 403) {
         return {
-          status: "fail",
+          code: statusCode,
+          success: false,
           msg: "닉네임을 규칙에 맞게 입력해주세요.",
         };
       }
     }
     // 모든 예외에 대한 기본 return
     return {
-      status: "fail",
+      code: 500,
+      success: false,
       msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
     };
   }
@@ -36,10 +39,11 @@ export const getCheckNickname = async (
 // email 중복 조회
 export const getCheckEmail = async (email: string): Promise<apiResponse> => {
   try {
-    const response = await api.get(`/api/v1/auth/email/${email}`);
+    const response = await api.get(`/api/v1/members/email/${email}`);
 
     return {
-      status: response.data.status,
+      code: response.data.code,
+      success: response.data.success,
       msg: response.data.msg,
     };
   } catch (error) {
@@ -48,14 +52,16 @@ export const getCheckEmail = async (email: string): Promise<apiResponse> => {
 
       if (statusCode === 403) {
         return {
-          status: "fail",
+          code: statusCode,
+          success: false,
           msg: "이메일을 규칙에 맞게 입력해주세요.",
         };
       }
     }
     // 모든 예외에 대한 기본 return
     return {
-      status: "fail",
+      code: 500,
+      success: false,
       msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
     };
   }
@@ -66,9 +72,10 @@ export const postJoin = async (
   reqJoinType: ReqJoinType
 ): Promise<apiResponse> => {
   try {
-    const response = await api.post(`/api/v1/auth/join`, reqJoinType);
+    const response = await api.post(`/api/v1/members/join`, reqJoinType);
     return {
-      status: response.data.status,
+      code: response.data.code,
+      success: response.data.success,
       msg: response.data.msg,
     };
   } catch (error) {
@@ -77,7 +84,8 @@ export const postJoin = async (
 
       if (statusCode === 403) {
         return {
-          status: "fail",
+          code: statusCode,
+          success: false,
           msg: "각 항목을 규칙에 맞게 입력해주세요.",
         };
       }
@@ -85,7 +93,8 @@ export const postJoin = async (
       // 모든 예외에 대한 기본 return
     }
     return {
-      status: "fail",
+      code: 500,
+      success: false,
       msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
     };
   }

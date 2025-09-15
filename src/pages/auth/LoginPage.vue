@@ -76,7 +76,7 @@ const login = async () => {
   const result = await postLogin(reqLoginType);
   alert(result.msg);
 
-  if (result.status === "OK") {
+  if (result.success === true) {
     // login 성공 console.log("로그인 성공");
 
     router.push("/").then(() => {
