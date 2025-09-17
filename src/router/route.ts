@@ -12,6 +12,13 @@ const routes = [
       { path: "login", component: () => import("@/pages/auth/LoginPage.vue") },
     ],
   },
+  {
+    path: "/vintage",
+    component: () => import("@/layouts/MainLayout.vue"),
+    children: [
+      { path: "", component: () => import("@/pages/vintage/vintagePage.vue") },
+    ],
+  },
 ];
 
 export default routes;

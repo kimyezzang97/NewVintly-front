@@ -24,7 +24,12 @@
           class="d-flex"
           hide-slider
         >
-          <v-tab text="게시판" class="custom-tab"></v-tab>
+          <v-tab 
+          v-if="authStore.isAuthenticated"
+          text="Vintage" 
+          class="custom-tab"
+          to="/vintage"
+          ></v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
         <v-spacer></v-spacer>
