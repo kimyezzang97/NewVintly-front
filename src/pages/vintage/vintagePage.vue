@@ -285,23 +285,41 @@
               <v-col cols="7">{{ lonInfo }}</v-col>
             </v-row>
 
-            <!-- 단일 이미지 URL -->
+            <!-- 이미지 리스트 -->
             <v-row>
-              <v-col cols="5" class="text-grey-darken-1 font-weight-medium mb-2 d-flex justify-center text-center">이미지</v-col>
+              <v-col cols="5" class="text-grey-darken-1 font-weight-medium mb-2 d-flex justify-center text-center">
+                이미지
+              </v-col>
+
               <v-col cols="7">
-                <v-img
-                  :src="thumbnailPathInfo"
-                  width="320"
+                <v-carousel
+                  v-model="imgIndex"
                   height="240"
-                  class="rounded-lg"
-                  cover
+                  hide-delimiters
+                  show-arrows="hover"
                 >
-                  <template #error>
-                    <div class="d-flex align-center justify-center" style="height:240px;">
-                      이미지 로드 실패
-                    </div>
-                  </template>
-                </v-img>
+                  <v-carousel-item
+                    v-for="(item, i) in vintageImgPathList"
+                    :key="i"
+                  >
+                    <v-img
+                      :src="item.imgPath"  
+                      width="320"
+                      height="240"
+                      class="rounded-lg mx-auto"
+                      cover
+                    >
+                      <template #error>
+                        <div
+                          class="d-flex align-center justify-center"
+                          style="height:240px;"
+                        >
+                          이미지 로드 실패
+                        </div>
+                      </template>
+                    </v-img>
+                  </v-carousel-item>
+                </v-carousel>
               </v-col>
             </v-row>
           </v-card-text>
@@ -322,7 +340,7 @@
 </template>
 
 <script setup lang="ts">
-import { createVintage, getVintageList } from '@/api/vintage/vintageApi';
+import { createVintage, getVintageDetail, getVintageList } from '@/api/vintage/vintageApi';
 import { ReqCreateVintageType } from '@/types/vintage/reqCreateVintage';
 import { computed, onMounted, ref } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
@@ -348,35 +366,75 @@ const mouseOutKakaoMapMarker = (item: VintageShop): void => {
   item.visibleStatus = false;
 };
 
-function closeInfoDialog() {
-  infoDialog.value = false 
-  
+const props = defineProps<{
+  thumbnailPathInfo: string | string[] | null
+}>()
 
-  nameInfo.value = ''
-  stateInfo.value = ''
-  districtInfo.value = ''
-  detailAddrInfo.value = ''
-  latInfo.value = 0
-  lonInfo.value = 0
-  thumbnailPathInfo.value = ''
+const getImages = computed<string[]>(() => {
+  if (!props.thumbnailPathInfo) return []
+  return Array.isArray(props.thumbnailPathInfo)
+    ? props.thumbnailPathInfo
+    : [props.thumbnailPathInfo]
+})
+
+const imgIndex = ref(0)
+
+function prevImage() {
+  if (images.value.length <= 1) return
+  imgIndex.value = (imgIndex.value + images.value.length - 1) % images.value.length
+}
+function nextImage() {
+  if (images.value.length <= 1) return
+  imgIndex.value = (imgIndex.value + 1) % images.value.length
 }
 
+const vintageIdInfo = ref<string>('');
 const nameInfo = ref<string>('');
 const stateInfo = ref<string>('');
 const districtInfo = ref<string>('');
 const detailAddrInfo = ref<string>('');
 const latInfo = ref<number>(0);
 const lonInfo = ref<number>(0);
-const thumbnailPathInfo = ref<string>('')
+const vintageImgPathList = ref<vintageImgType[]>([])
 
-const onClickKakaoMapMarker = (item: VintageShop): void => {
-  nameInfo.value = item.name
-  stateInfo.value = item.state
-  districtInfo.value = item.district
-  detailAddrInfo.value = item.detailAddr
-  latInfo.value = item.lat
-  lonInfo.value = item.lng
-  thumbnailPathInfo.value = item.thumbnailPath
+function closeInfoDialog() {
+  infoDialog.value = false 
+  nameInfo.value = ''
+  stateInfo.value = ''
+  districtInfo.value = ''
+  detailAddrInfo.value = ''
+  latInfo.value = 0
+  lonInfo.value = 0
+  vintageImgPathList.value = []
+}
+
+interface vintageImgType {
+  vintageImgId: number;     
+  imgPath: string;     
+}
+
+const onClickKakaoMapMarker = async (item: VintageShop): Promise<void> => {
+  closeInfoDialog()
+
+  console.log('vintage id : ', item.vintageId)
+  
+  const result = await getVintageDetail(item.vintageId)
+  
+  if (result.success === true) {
+    const data = result.data
+    vintageIdInfo.value = data.vintageId
+    nameInfo.value = data.name
+    stateInfo.value = data.state
+    districtInfo.value = data.district
+    detailAddrInfo.value = data.detailAddr
+    latInfo.value = data.lat
+    lonInfo.value = data.lon
+    vintageImgPathList.value = data.imgList
+  
+  } else {
+    alert(result.msg);
+  }
+  
 
   infoDialog.value = true
 };
