@@ -326,9 +326,28 @@
 
           <v-divider class="custom-divider" thickness="3px" color="#004d40" style="margin-top: 10px" />
 
+          <v-card-actions style="margin-top: 20px">
+            <v-spacer />
+            <v-btn text color="red-darken-2" @click="deleteConfirmDialog = true">삭제</v-btn>
+            <v-btn text @click="infoDialog = false">닫기</v-btn>     
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="deleteConfirmDialog" max-width="400">
+        <v-card>
+          <v-card-title class="text-h6">삭제 확인</v-card-title>
+          <v-card-text>
+            정말로 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+          </v-card-text>
           <v-card-actions>
             <v-spacer />
-            <v-btn text @click="infoDialog = false">닫기</v-btn>
+            <v-btn color="red-darken-2" text @click="onConfirmDelete(vintageIdInfo)">
+              삭제
+            </v-btn>
+            <v-btn color="grey-darken-1" text @click="deleteConfirmDialog = false">
+              취소
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -340,11 +359,12 @@
 </template>
 
 <script setup lang="ts">
-import { createVintage, getVintageDetail, getVintageList } from '@/api/vintage/vintageApi';
+import { createVintage, deleteVintage, getVintageDetail, getVintageList } from '@/api/vintage/vintageApi';
 import { ReqCreateVintageType } from '@/types/vintage/reqCreateVintage';
 import { computed, onMounted, ref } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 
+const deleteConfirmDialog = ref<boolean>(false)
 const dialog = ref<boolean>(false)
 const infoDialog = ref<boolean>(false)
 const visibleDialog = ref<boolean>(false)
@@ -438,6 +458,29 @@ const onClickKakaoMapMarker = async (item: VintageShop): Promise<void> => {
 
   infoDialog.value = true
 };
+
+async function onConfirmDelete(vintageId: string) {
+  
+ console.log('vintage id : ', vintageId)
+  
+  const result = await deleteVintage(Number(vintageId))
+  
+  if (result.success === true) {
+    const data = result.data
+    
+    // ✅ 실제 삭제 로직 실행
+    console.log("삭제 완료 ")
+    console.log("delete - vintageId : ", vintageId)
+    deleteConfirmDialog.value = false
+    infoDialog.value = false
+
+    alert('삭제되었습니다');
+  } else {
+    alert(result.msg);
+  }
+
+  
+}
 
 
 async function createClick(){

@@ -105,3 +105,36 @@ export const getVintageDetail = async (
     };
   }
 };
+
+// vintage 샵 삭제
+export const deleteVintage = async (
+  vintageId: number
+): Promise<apiResponse> => {
+  try {
+    const response = await api.delete(`/api/v1/vintages/${vintageId}`);
+    return {
+      code: response.data.code,
+      success: response.data.success,
+      msg: response.data.msg,
+    };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const statusCode = error.response.status;
+
+      if (statusCode === 403) {
+        return {
+          code: statusCode,
+          success: false,
+          msg: "각 항목을 규칙에 맞게 입력해주세요.",
+        };
+      }
+
+      // 모든 예외에 대한 기본 return
+    }
+    return {
+      code: 500,
+      success: false,
+      msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
+    };
+  }
+};
