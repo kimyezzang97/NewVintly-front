@@ -322,6 +322,67 @@
                 </v-carousel>
               </v-col>
             </v-row>
+
+            <!-- 좋아요 -->
+            <v-row class="mt-6">
+              <v-col cols="12" class="d-flex justify-center">
+                <v-btn
+                  :color="liked ? 'red' : 'grey-darken-1'"
+                  variant="tonal"
+                  prepend-icon="mdi-heart"
+                  @click="toggleLike"
+                  :loading="likeLoading"
+                  class="px-6"
+                  size="large"
+                >
+                  좋아요 {{ likeCount }}
+                </v-btn>
+              </v-col>
+            </v-row>
+            
+            <!-- 댓글 섹션: 중앙 정렬 + 최대폭 제한 -->
+            <v-row>
+              <v-col cols="12" class="d-flex flex-column align-center">
+                <!-- 헤더 -->
+                <div class="text-subtitle-1 font-weight-medium text-center mb-2">
+                  댓글 ({{ comments.length }})
+                </div>
+
+                <div style="width:100%; max-width:560px;">
+                  <v-list
+                    v-if="comments.length"
+                    lines="three"
+                    density="comfortable"
+                    class="rounded-lg elevation-1"
+                  >
+                    <v-list-item
+                      v-for="c in comments"
+                      :key="c.commentId"
+                      class="border-b"
+                    >
+                      <template #prepend>
+                        <v-avatar size="32" color="grey-lighten-3">
+                          <v-icon color="grey-darken-1">mdi-account</v-icon>
+                        </v-avatar>
+                      </template>
+
+                      <v-list-item-title class="d-flex align-center justify-space-between">
+                        <span class="font-weight-medium">{{ c.nickname }}</span>
+                        <span class="text-caption text-grey">{{ formatDate(c.createdAt) }}</span>
+                      </v-list-item-title>
+
+                      <v-list-item-subtitle class="mt-1 text-body-2">
+                        {{ c.content }}
+                      </v-list-item-subtitle>
+                    </v-list-item>
+                  </v-list>
+
+                  <div v-else class="text-grey text-center my-8">
+                    아직 댓글이 없습니다.
+                  </div>
+                </div>
+              </v-col>
+            </v-row>
           </v-card-text>
 
           <v-divider class="custom-divider" thickness="3px" color="#004d40" style="margin-top: 10px" />
@@ -364,9 +425,26 @@ import { ReqCreateVintageType } from '@/types/vintage/reqCreateVintage';
 import { computed, onMounted, ref } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 
+// 1) 댓글 타입: 백엔드 응답에 맞게
+type CommentItem = {
+  commentId: number
+  memberId: number
+  nickname: string
+  content: string
+  createdAt: string
+}
+
+const comments = ref<CommentItem[]>([])   // ✅ 댓글 리스트
+
+// 2) 좋아요
+const liked = ref<boolean>(false)
+const likeCount = ref<number>(0)
+const likeLoading = ref(false)
+
 const deleteConfirmDialog = ref<boolean>(false)
 const dialog = ref<boolean>(false)
 const infoDialog = ref<boolean>(false)
+
 const visibleDialog = ref<boolean>(false)
 
 const name = ref<string>('');
@@ -417,6 +495,34 @@ const latInfo = ref<number>(0);
 const lonInfo = ref<number>(0);
 const vintageImgPathList = ref<vintageImgType[]>([])
 
+
+async function toggleLike() {
+  if (likeLoading.value) return
+  likeLoading.value = true
+  liked.value = !liked.value
+
+  if(liked.value) likeCount.value++
+  else likeCount.value--
+
+  likeLoading.value = false
+  // // 낙관적 업데이트
+  // const prevLiked = liked.value
+  // const prevCount = likeCount.value
+  // liked.value = !prevLiked
+  // likeCount.value = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1
+
+  // try {
+  //   // 실제 API 호출 (예시 엔드포인트)
+  //   // await api.post(`/api/v1/vintages/${shop.vintageId}/like`, { like: liked.value })
+  // } catch (e) {
+  //   // 실패 시 롤백
+  //   liked.value = prevLiked
+  //   likeCount.value = prevCount
+  // } finally {
+  //   likeLoading.value = false
+  // }
+}
+
 function closeInfoDialog() {
   infoDialog.value = false 
   nameInfo.value = ''
@@ -442,6 +548,7 @@ const onClickKakaoMapMarker = async (item: VintageShop): Promise<void> => {
   
   if (result.success === true) {
     const data = result.data
+
     vintageIdInfo.value = data.vintageId
     nameInfo.value = data.name
     stateInfo.value = data.state
@@ -449,13 +556,19 @@ const onClickKakaoMapMarker = async (item: VintageShop): Promise<void> => {
     detailAddrInfo.value = data.detailAddr
     latInfo.value = data.lat
     lonInfo.value = data.lon
+
+    // 이미지 리스트
     vintageImgPathList.value = data.imgList
   
+    // ✅ 좋아요/댓글 세팅
+    liked.value = data.liked
+    likeCount.value = data.likeCount
+    comments.value = data.comments ?? []
+
   } else {
     alert(result.msg);
   }
   
-
   infoDialog.value = true
 };
 
@@ -478,8 +591,6 @@ async function onConfirmDelete(vintageId: string) {
   } else {
     alert(result.msg);
   }
-
-  
 }
 
 
@@ -562,7 +673,12 @@ interface VintageShop {
   thumbnailPath: string;
   clickStatus: boolean;
   visibleStatus: boolean;
+
+  likeCount: number
+  liked: boolean
+  comments: CommentItem[]
 }
+
 
 const vintageShopList = ref<VintageShop[]>([])
 
@@ -651,6 +767,18 @@ const REGION_COORDS: Record<StateType, Record<string, { lat: number; lon: number
     // ... 계속 추가
   },
 };
+
+function formatDate(d: string) {
+  const date = new Date(d)
+  if (isNaN(date.getTime())) return ''
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  const hh = String(date.getHours()).padStart(2, '0')
+  const mm = String(date.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${day} ${hh}:${mm}`
+}
+
 </script>
 
 <style lang="scss" scoped>
