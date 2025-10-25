@@ -421,6 +421,8 @@
 
 <script setup lang="ts">
 import { createVintage, deleteVintage, getVintageDetail, getVintageList } from '@/api/vintage/vintageApi';
+import { createVintageLike, deleteVintageLike} from '@/api/vintageLike/vintageLikeApi';
+
 import { ReqCreateVintageType } from '@/types/vintage/reqCreateVintage';
 import { computed, onMounted, ref } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
@@ -497,30 +499,39 @@ const vintageImgPathList = ref<vintageImgType[]>([])
 
 
 async function toggleLike() {
-  if (likeLoading.value) return
-  likeLoading.value = true
-  liked.value = !liked.value
+  if (likeLoading.value) return;
+  likeLoading.value = true;
 
-  if(liked.value) likeCount.value++
-  else likeCount.value--
+  const prevLiked = liked.value;
+  const prevCount = likeCount.value;
 
-  likeLoading.value = false
-  // // 낙관적 업데이트
-  // const prevLiked = liked.value
-  // const prevCount = likeCount.value
-  // liked.value = !prevLiked
-  // likeCount.value = prevLiked ? Math.max(0, prevCount - 1) : prevCount + 1
+  // ✅ 낙관적 업데이트 (한 번만)
+  if (!prevLiked) {
+    liked.value = true;
+    likeCount.value = prevCount + 1;
+  } else {
+    liked.value = false;
+    likeCount.value = Math.max(0, prevCount - 1);
+  }
 
-  // try {
-  //   // 실제 API 호출 (예시 엔드포인트)
-  //   // await api.post(`/api/v1/vintages/${shop.vintageId}/like`, { like: liked.value })
-  // } catch (e) {
-  //   // 실패 시 롤백
-  //   liked.value = prevLiked
-  //   likeCount.value = prevCount
-  // } finally {
-  //   likeLoading.value = false
-  // }
+  try {
+    const vid = Number(vintageIdInfo.value);
+    if (!vid) throw new Error('Invalid vintageId');
+
+    // 서버 반영
+    if (!prevLiked) {
+      await createVintageLike(vid);
+    } else {
+      await deleteVintageLike(vid);
+    }
+
+  } catch (e) {
+    // 실패시 롤백
+    liked.value = prevLiked;
+    likeCount.value = prevCount;
+  } finally {
+    likeLoading.value = false;
+  }
 }
 
 function closeInfoDialog() {
