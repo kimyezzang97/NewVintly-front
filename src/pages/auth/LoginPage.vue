@@ -52,8 +52,9 @@ import { postLogin } from "@/api/auth/loginApi";
 import { ReqLoginType } from "@/types/auth/reqLoginType";
 import { ref } from "vue";
 
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
+const route = useRoute();
 
 const email = ref("");
 const password = ref("");
@@ -79,7 +80,11 @@ const login = async () => {
   if (result.success === true) {
     // login 성공 console.log("로그인 성공");
 
-    router.push("/").then(() => {
+    // 가드에 막혀 로그인 페이지로 왔다면 원래 가려던 곳으로 돌려보낸다
+    const redirect = route.query.redirect;
+    const target = typeof redirect === "string" ? redirect : "/";
+
+    router.push(target).then(() => {
       window.location.reload(); // 전체 페이지 새로고침
     });
   }
