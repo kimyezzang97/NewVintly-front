@@ -424,6 +424,7 @@ import { createVintage, deleteVintage, getVintageDetail, getVintageList } from '
 import { createVintageLike, deleteVintageLike} from '@/api/vintageLike/vintageLikeApi';
 
 import { ReqCreateVintageType } from '@/types/vintage/reqCreateVintage';
+import { validateImages } from '@/utils/imageUpload';
 import { computed, onMounted, ref } from 'vue';
 import { KakaoMap, KakaoMapMarker } from 'vue3-kakao-maps';
 
@@ -665,8 +666,10 @@ function validateForm(): boolean {
     alert('좌표 정보를 입력해주세요.')
     return false
   }
-  if (images.value.length === 0) {
-    alert('최소 한 장의 이미지를 업로드해주세요.')
+  // 장수/용량/파일형식까지 함께 검사한다 (서버 한도와 같은 기준)
+  const imageError = validateImages(images.value)
+  if (imageError) {
+    alert(imageError)
     return false
   }
 

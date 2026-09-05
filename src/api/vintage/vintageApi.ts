@@ -1,7 +1,8 @@
 import { api } from "@/api/api";
-import axios from "axios";
+import { toApiError } from "@/api/errorHandler";
 import { apiResponse } from "@/types/apiResponse";
 import { ReqCreateVintageType } from "@/types/vintage/reqCreateVintage";
+import { validateImages } from "@/utils/imageUpload";
 
 // vintage 샵 등록 req
 const buildVintageFormData = (req: ReqCreateVintageType) => {
@@ -22,6 +23,13 @@ const buildVintageFormData = (req: ReqCreateVintageType) => {
 export const createVintage = async (
   reqType: ReqCreateVintageType
 ): Promise<apiResponse> => {
+  // 한도를 넘는 요청은 보내기 전에 막는다.
+  // 안 그러면 100MB를 다 올린 뒤에야 Nginx/서버에게 거절당한다.
+  const imageError = validateImages(reqType.images);
+  if (imageError) {
+    return { code: 413, success: false, msg: imageError };
+  }
+
   try {
     const formData = buildVintageFormData(reqType);
 
@@ -32,77 +40,39 @@ export const createVintage = async (
       msg: response.data.msg,
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status;
-
-      if (statusCode === 403) {
-        return {
-          code: statusCode,
-          success: false,
-          msg: "각 항목을 규칙에 맞게 입력해주세요.",
-        };
-      }
-
-      // 모든 예외에 대한 기본 return
-    }
-    return {
-      code: 500,
-      success: false,
-      msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
-    };
+    return toApiError(error);
   }
 };
 
 // 빈티지 샵 리스트 조회
-export const getVintageList = async (
-): Promise<apiResponse> => {
+export const getVintageList = async (): Promise<apiResponse> => {
   try {
     const response = await api.get(`/api/v1/vintages`);
-    console.log('response : ', response)
     return {
       code: response.data.code,
       success: response.data.success,
       msg: response.data.msg,
-      data: response.data.data
+      data: response.data.data,
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status; // error.response.data
-      console.log(error)
-    }
-    // 모든 예외에 대한 기본 return
-    return {
-      code: 500,
-      success: false,
-      msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
-    };
+    return toApiError(error);
   }
 };
 
 // // 빈티지 샵 상세 조회
 export const getVintageDetail = async (
-    vintageId: number
+  vintageId: number
 ): Promise<apiResponse> => {
   try {
     const response = await api.get(`/api/v1/vintages/${vintageId}`);
-    console.log('response : ', response)
     return {
       code: response.data.code,
       success: response.data.success,
       msg: response.data.msg,
-      data: response.data.data
+      data: response.data.data,
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status; // error.response.data
-      console.log(error)
-    }
-    // 모든 예외에 대한 기본 return
-    return {
-      code: 500,
-      success: false,
-      msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
-    };
+    return toApiError(error);
   }
 };
 
@@ -118,23 +88,6 @@ export const deleteVintage = async (
       msg: response.data.msg,
     };
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const statusCode = error.response.status;
-
-      if (statusCode === 403) {
-        return {
-          code: statusCode,
-          success: false,
-          msg: "각 항목을 규칙에 맞게 입력해주세요.",
-        };
-      }
-
-      // 모든 예외에 대한 기본 return
-    }
-    return {
-      code: 500,
-      success: false,
-      msg: "서버 오류가 발생했습니다. 잠시 후 이용해주세요.",
-    };
+    return toApiError(error);
   }
 };
