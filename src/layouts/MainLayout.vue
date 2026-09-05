@@ -57,7 +57,11 @@
             class="custom-tab"
             to="/auth/join"
           ></v-tab>
-          <v-tab v-else text="마이페이지" class="custom-tab"></v-tab>
+          <v-tab
+            v-else
+            :text="authStore.nickname ?? '마이페이지'"
+            class="custom-tab"
+          ></v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
       </v-app-bar>
